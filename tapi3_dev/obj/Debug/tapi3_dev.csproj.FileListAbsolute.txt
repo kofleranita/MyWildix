@@ -8,3 +8,15 @@ C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\obj\Debug\tapi3_dev.Form1.resources
 C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\obj\Debug\tapi3_dev.csproj.GenerateResource.Cache
 C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\obj\Debug\tapi3_dev.exe
 C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\obj\Debug\tapi3_dev.pdb
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\obj\Debug\Interop.TAPI3Lib.dll
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\obj\Debug\tapi3_dev.csproj.ResolveComReference.cache
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\obj\Debug\tapi3_dev.exe
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\obj\Debug\tapi3_dev.pdb
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\bin\Debug\tapi3_dev.exe
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\bin\Debug\tapi3_dev.pdb
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\bin\Debug\Interop.TAPI3Lib.dll
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\obj\Debug\tapi3_dev.csprojResolveAssemblyReference.cache
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\obj\Debug\tapi3_dev.Form1.resources
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\obj\Debug\tapi3_dev.csproj.GenerateResource.Cache
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\bin\Debug\Newtonsoft.Json.dll
+C:\Users\wk\Source\Repos\MyWildix\tapi3_dev\bin\Debug\Newtonsoft.Json.xml

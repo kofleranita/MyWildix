@@ -5,7 +5,9 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using TAPI3Lib;
-
+using System.IO;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace tapi3_dev
 {
@@ -42,7 +44,11 @@ namespace tapi3_dev
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Button button6;
     private NotifyIcon notifyIcon;
+    private ContextMenuStrip contextMenuStrip1;
+    private ToolStripMenuItem tEstToolStripMenuItem;
     private IContainer components;
+    List<classHistory> lstHistory = new List<classHistory>();
+    string destPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "history.txt");
 
     public Form1()
 		{
@@ -73,6 +79,7 @@ namespace tapi3_dev
 				cn=new callnotification();
 				cn.addtolist=new callnotification.listshow(this.status);
         cn.addToCallNotify = new callnotification.addCallNotify(this.addCallNotify);
+        cn.addToHistory = new callnotification.addCallHistory(this.addCallHistory);
      
         tobj.ITTAPIEventNotification_Event_Event+= new TAPI3Lib.ITTAPIEventNotification_EventEventHandler(cn.Event);
 				tobj.EventFilter=(int)(TAPI_EVENT.TE_CALLNOTIFICATION|
@@ -155,8 +162,11 @@ namespace tapi3_dev
       this.label3 = new System.Windows.Forms.Label();
       this.button6 = new System.Windows.Forms.Button();
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+      this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.tEstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.groupBox1.SuspendLayout();
       this.groupBox2.SuspendLayout();
+      this.contextMenuStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
       // comboBox1
@@ -309,10 +319,25 @@ namespace tapi3_dev
       // 
       // notifyIcon
       // 
+      this.notifyIcon.ContextMenuStrip = this.contextMenuStrip1;
       this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
       this.notifyIcon.Text = "Wildix";
       this.notifyIcon.Visible = true;
-      this.notifyIcon.Click += new System.EventHandler(this.notifyIcon_Click);
+      this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
+      // 
+      // contextMenuStrip1
+      // 
+      this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tEstToolStripMenuItem});
+      this.contextMenuStrip1.Name = "contextMenuStrip1";
+      this.contextMenuStrip1.Size = new System.Drawing.Size(97, 26);
+      // 
+      // tEstToolStripMenuItem
+      // 
+      this.tEstToolStripMenuItem.Name = "tEstToolStripMenuItem";
+      this.tEstToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+      this.tEstToolStripMenuItem.Text = "TEst";
+      this.tEstToolStripMenuItem.Click += new System.EventHandler(this.tEstToolStripMenuItem_Click);
       // 
       // Form1
       // 
@@ -339,6 +364,7 @@ namespace tapi3_dev
       this.Resize += new System.EventHandler(this.Form1_Resize);
       this.groupBox1.ResumeLayout(false);
       this.groupBox2.ResumeLayout(false);
+      this.contextMenuStrip1.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -473,13 +499,6 @@ namespace tapi3_dev
 			//MessageBox.Show("To recieve calls from any line you need to register on that line\n,you can do this by selecting the line ansd press the register button!","Instruction");
 		}
 
-    private void notifyIcon_Click(object sender, EventArgs e)
-    {
-      Show();
-      this.WindowState = FormWindowState.Normal;
-      //notifyIcon.Visible = false;
-
-    }
 
     private void Form1_Resize(object sender, EventArgs e)
     {
@@ -506,25 +525,57 @@ namespace tapi3_dev
 			}
 		}
 
+    private void tEstToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      addCallNotify("context");
+    }
+
+    private void notifyIcon_DoubleClick(object sender, EventArgs e)
+    {
+      Show();
+      this.WindowState = FormWindowState.Normal;
+    }
+
     public void addCallNotify(string s)
     {
-      //notifyIcon.BalloonTipIcon =
-      notifyIcon.BalloonTipTitle = "title";
+      notifyIcon.BalloonTipTitle = "Wildix";
       notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
       notifyIcon.BalloonTipText = s;
-      notifyIcon.ShowBalloonTip(1000);
-
+      notifyIcon.ShowBalloonTip(3000);
     }
+
+    private void addCallHistory(classHistory myHistory)
+    {
+      myHistory.StartTime = DateTime.Now;
+      lstHistory.Insert(0, myHistory);
+      DoSerialize();
+    }
+
+    private void DoSerialize()
+    {
+      string output = JsonConvert.SerializeObject(lstHistory);
+      System.IO.File.WriteAllText(destPath, output);
+    }
+
+    private void DoDeserialize()
+    {
+      this.lstHistory = JsonConvert.DeserializeObject<List<classHistory>>(File.ReadAllText(destPath));
+    }
+
   }
 	class callnotification:TAPI3Lib.ITTAPIEventNotification
 	{
 		public delegate void listshow(string str);
     public delegate void addCallNotify(string s);
-		public listshow addtolist;
+    public delegate void addCallHistory(classHistory myHistory);
+    public listshow addtolist;
     public addCallNotify addToCallNotify;
-		
-		public void Event(TAPI3Lib.TAPI_EVENT te,object eobj)
+    public addCallHistory addToHistory;
+    classHistory clHistory = new classHistory();
+
+    public void Event(TAPI3Lib.TAPI_EVENT te,object eobj)
 		{
+      
 			switch(te)
 			{
 				case TAPI3Lib.TAPI_EVENT.TE_CALLNOTIFICATION:
@@ -534,6 +585,13 @@ namespace tapi3_dev
           {
             string c = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
             addtolist("Call Offering: " + c + " -> " + cn.Call.Address.DialableAddress);
+
+            clHistory.FromName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
+            clHistory.FromNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
+            clHistory.ToName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
+            clHistory.ToNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
+            addToHistory(clHistory);
+
             addToCallNotify(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME) + " (" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER) + ")");
             addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME));//Anita
             //addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDPARTYFRIENDLYNAME));
