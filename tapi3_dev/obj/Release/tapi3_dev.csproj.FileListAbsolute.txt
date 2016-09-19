@@ -1,0 +1,7 @@
+C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\obj\Release\Interop.TAPI3Lib.dll
+C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\obj\Release\tapi3_dev.csproj.ResolveComReference.cache
+C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\bin\Release\tapi3_dev.exe
+C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\bin\Release\Interop.TAPI3Lib.dll
+C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\obj\Release\tapi3_dev.Form1.resources
+C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\obj\Release\tapi3_dev.csproj.GenerateResource.Cache
+C:\Users\wk\Downloads\tapi3_dev\tapi3_dev\obj\Release\tapi3_dev.exe

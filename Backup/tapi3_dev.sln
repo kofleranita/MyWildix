@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tapi3_dev", "tapi3_dev.csproj", "{02B0FBEE-AF2A-4AA3-8A2C-545E69B19CFF}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{02B0FBEE-AF2A-4AA3-8A2C-545E69B19CFF}.Debug.ActiveCfg = Debug|.NET
+		{02B0FBEE-AF2A-4AA3-8A2C-545E69B19CFF}.Debug.Build.0 = Debug|.NET
+		{02B0FBEE-AF2A-4AA3-8A2C-545E69B19CFF}.Release.ActiveCfg = Release|.NET
+		{02B0FBEE-AF2A-4AA3-8A2C-545E69B19CFF}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
