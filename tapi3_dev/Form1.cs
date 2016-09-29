@@ -60,6 +60,8 @@ namespace tapi3_dev
 			h323=false;
 			reject=false;
       notifyIcon.Visible = true;
+      DoDeserialize();
+
       //MessageBox.Show("lines : "+lines,"Lines avaialble are");
       //
       // TODO: Add any constructor code after InitializeComponent call
@@ -528,6 +530,9 @@ namespace tapi3_dev
     private void tEstToolStripMenuItem_Click(object sender, EventArgs e)
     {
       addCallNotify("context");
+      classHistory mycl = new classHistory();
+      mycl.FromName = "test "+(DateTime.Now).ToShortTimeString();
+      addCallHistory(mycl);
     }
 
     private void notifyIcon_DoubleClick(object sender, EventArgs e)
