@@ -8,6 +8,7 @@ using TAPI3Lib;
 using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Configuration;
 
 namespace tapi3_dev
 {
@@ -61,6 +62,16 @@ namespace tapi3_dev
 			reject=false;
       notifyIcon.Visible = true;
       DoDeserialize();
+      string mydefaultLine = ConfigurationManager.AppSettings["defaultLine"].ToString();
+      if (mydefaultLine != "")
+      {
+        int myLine = comboBox1.Items.IndexOf(mydefaultLine);
+        if (myLine >= 0)
+        {
+          line = myLine;
+          RegisterLine();
+        }
+      }
 
       //MessageBox.Show("lines : "+lines,"Lines avaialble are");
       //
@@ -104,13 +115,13 @@ namespace tapi3_dev
 					else
 						break;
 				}
-					
-				//tobj.ITTAPIEventNotification_Event_Event+= new TAPI3Lib.ITTAPIEventNotification_EventEventHandler(cn.Event);
-				//tobj.EventFilter=(int)(TAPI_EVENT.TE_CALLNOTIFICATION|TAPI_EVENT.TE_DIGITEVENT|TAPI_EVENT.TE_PHONEEVENT|TAPI_EVENT.TE_CALLSTATE);
-				//registertoken=tobj.RegisterCallNotifications(ia[6],true,true,TapiConstants.TAPIMEDIATYPE_AUDIO|TapiConstants.TAPIMEDIATYPE_DATAMODEM,1);	
-				//MessageBox.Show("Registration token :-"+registertoken,"Regitration complete");
-					
-			}
+
+        //tobj.ITTAPIEventNotification_Event_Event+= new TAPI3Lib.ITTAPIEventNotification_EventEventHandler(cn.Event);
+        //tobj.EventFilter=(int)(TAPI_EVENT.TE_CALLNOTIFICATION|TAPI_EVENT.TE_DIGITEVENT|TAPI_EVENT.TE_PHONEEVENT|TAPI_EVENT.TE_CALLSTATE);
+        //registertoken=tobj.RegisterCallNotifications(ia[6],true,true,TapiConstants.TAPIMEDIATYPE_AUDIO|TapiConstants.TAPIMEDIATYPE_DATAMODEM,1);	
+        //MessageBox.Show("Registration token :-"+registertoken,"Regitration complete");
+
+      }
 			catch(Exception e)
 			{
 				MessageBox.Show(e.ToString());
@@ -514,18 +525,23 @@ namespace tapi3_dev
 
     private void button6_Click(object sender, System.EventArgs e)
 		{
-			try
-			{
-				registertoken[line]=tobj.RegisterCallNotifications(ia[line],true,true,TapiConstants.TAPIMEDIATYPE_AUDIO,2);
-        cn.addtolist("Registration token : " + registertoken[line]);
-        addCallNotify("asdf");
-        //MessageBox.Show("Registration token : "+registertoken[line],"Registration Succeed for line "+line);
-			}
-			catch(Exception ein)
-			{
-				MessageBox.Show("Failed to register on line "+line,"Registration for calls");
-			}
+      RegisterLine();
 		}
+
+    private void RegisterLine()
+    {
+      try
+      {
+        registertoken[line] = tobj.RegisterCallNotifications(ia[line], true, true, TapiConstants.TAPIMEDIATYPE_AUDIO, 2);
+        cn.addtolist("Registration token : " + registertoken[line]);
+        addCallNotify("Registriert " + registertoken[line]);
+        //MessageBox.Show("Registration token : "+registertoken[line],"Registration Succeed for line "+line);
+      }
+      catch (Exception ein)
+      {
+        MessageBox.Show("Failed to register on line " + line, "Registration for calls");
+      }
+    }
 
     private void tEstToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -576,7 +592,7 @@ namespace tapi3_dev
     public listshow addtolist;
     public addCallNotify addToCallNotify;
     public addCallHistory addToHistory;
-    classHistory clHistory = new classHistory();
+    
 
     public void Event(TAPI3Lib.TAPI_EVENT te,object eobj)
 		{
@@ -591,6 +607,7 @@ namespace tapi3_dev
             string c = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
             addtolist("Call Offering: " + c + " -> " + cn.Call.Address.DialableAddress);
 
+            classHistory clHistory = new classHistory();
             clHistory.FromName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
             clHistory.FromNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
             clHistory.ToName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
