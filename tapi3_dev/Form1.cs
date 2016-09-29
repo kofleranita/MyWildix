@@ -19,8 +19,6 @@ namespace tapi3_dev
   /// </summary>
   public class Form1 : System.Windows.Forms.Form
 	{
-		private System.Windows.Forms.ComboBox comboBox1;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.ListBox listBox1;
 		private System.Windows.Forms.Button button1;
@@ -43,12 +41,19 @@ namespace tapi3_dev
 		private System.Windows.Forms.Button button5;
 		private System.Windows.Forms.TextBox textBox2;
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Button button6;
     private NotifyIcon notifyIcon;
     private ContextMenuStrip contextMenuStrip1;
     private ToolStripMenuItem tEstToolStripMenuItem;
     private IContainer components;
     List<classHistory> lstHistory = new List<classHistory>();
+    private TabControl tabControl;
+    private TabPage tabPage1;
+    private Button button6;
+    private Label label1;
+    private ComboBox comboBox1;
+    private TabPage tabPage2;
+    private DataGridView dataGridView1;
+    private DataGridView dataGridView2;
     string destPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "history.txt");
 
     public Form1()
@@ -69,6 +74,9 @@ namespace tapi3_dev
         if (myLine >= 0)
         {
           line = myLine;
+          comboBox1.SelectedIndex = myLine;
+          Hide();
+          this.WindowState = FormWindowState.Minimized;
           RegisterLine();
         }
       }
@@ -157,8 +165,6 @@ namespace tapi3_dev
 		{
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-      this.comboBox1 = new System.Windows.Forms.ComboBox();
-      this.label1 = new System.Windows.Forms.Label();
       this.groupBox1 = new System.Windows.Forms.GroupBox();
       this.button1 = new System.Windows.Forms.Button();
       this.listBox1 = new System.Windows.Forms.ListBox();
@@ -173,38 +179,32 @@ namespace tapi3_dev
       this.button5 = new System.Windows.Forms.Button();
       this.textBox2 = new System.Windows.Forms.TextBox();
       this.label3 = new System.Windows.Forms.Label();
-      this.button6 = new System.Windows.Forms.Button();
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.tEstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.tabControl = new System.Windows.Forms.TabControl();
+      this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.button6 = new System.Windows.Forms.Button();
+      this.label1 = new System.Windows.Forms.Label();
+      this.comboBox1 = new System.Windows.Forms.ComboBox();
+      this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.dataGridView1 = new System.Windows.Forms.DataGridView();
+      this.dataGridView2 = new System.Windows.Forms.DataGridView();
       this.groupBox1.SuspendLayout();
       this.groupBox2.SuspendLayout();
       this.contextMenuStrip1.SuspendLayout();
+      this.tabControl.SuspendLayout();
+      this.tabPage1.SuspendLayout();
+      this.tabPage2.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
       this.SuspendLayout();
-      // 
-      // comboBox1
-      // 
-      this.comboBox1.Location = new System.Drawing.Point(80, 32);
-      this.comboBox1.Name = "comboBox1";
-      this.comboBox1.Size = new System.Drawing.Size(408, 21);
-      this.comboBox1.TabIndex = 0;
-      this.comboBox1.Text = "Select Line of communication";
-      this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-      // 
-      // label1
-      // 
-      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label1.Location = new System.Drawing.Point(24, 32);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(32, 23);
-      this.label1.TabIndex = 1;
-      this.label1.Text = "Line";
       // 
       // groupBox1
       // 
       this.groupBox1.Controls.Add(this.button1);
       this.groupBox1.Controls.Add(this.listBox1);
-      this.groupBox1.Location = new System.Drawing.Point(80, 72);
+      this.groupBox1.Location = new System.Drawing.Point(59, 45);
       this.groupBox1.Name = "groupBox1";
       this.groupBox1.Size = new System.Drawing.Size(408, 160);
       this.groupBox1.TabIndex = 5;
@@ -229,14 +229,14 @@ namespace tapi3_dev
       // 
       // textBox1
       // 
-      this.textBox1.Location = new System.Drawing.Point(80, 280);
+      this.textBox1.Location = new System.Drawing.Point(58, 234);
       this.textBox1.Name = "textBox1";
       this.textBox1.Size = new System.Drawing.Size(152, 20);
       this.textBox1.TabIndex = 6;
       // 
       // label2
       // 
-      this.label2.Location = new System.Drawing.Point(80, 256);
+      this.label2.Location = new System.Drawing.Point(58, 210);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(80, 16);
       this.label2.TabIndex = 7;
@@ -244,7 +244,7 @@ namespace tapi3_dev
       // 
       // button2
       // 
-      this.button2.Location = new System.Drawing.Point(400, 280);
+      this.button2.Location = new System.Drawing.Point(378, 234);
       this.button2.Name = "button2";
       this.button2.Size = new System.Drawing.Size(75, 23);
       this.button2.TabIndex = 8;
@@ -253,7 +253,7 @@ namespace tapi3_dev
       // 
       // button3
       // 
-      this.button3.Location = new System.Drawing.Point(536, 240);
+      this.button3.Location = new System.Drawing.Point(483, 182);
       this.button3.Name = "button3";
       this.button3.Size = new System.Drawing.Size(75, 23);
       this.button3.TabIndex = 9;
@@ -262,7 +262,7 @@ namespace tapi3_dev
       // 
       // button4
       // 
-      this.button4.Location = new System.Drawing.Point(536, 280);
+      this.button4.Location = new System.Drawing.Point(483, 234);
       this.button4.Name = "button4";
       this.button4.Size = new System.Drawing.Size(75, 23);
       this.button4.TabIndex = 11;
@@ -272,7 +272,7 @@ namespace tapi3_dev
       // groupBox2
       // 
       this.groupBox2.Controls.Add(this.checkBox2);
-      this.groupBox2.Location = new System.Drawing.Point(520, 160);
+      this.groupBox2.Location = new System.Drawing.Point(483, 112);
       this.groupBox2.Name = "groupBox2";
       this.groupBox2.Size = new System.Drawing.Size(104, 64);
       this.groupBox2.TabIndex = 12;
@@ -290,7 +290,7 @@ namespace tapi3_dev
       // 
       // checkBox1
       // 
-      this.checkBox1.Location = new System.Drawing.Point(264, 280);
+      this.checkBox1.Location = new System.Drawing.Point(242, 234);
       this.checkBox1.Name = "checkBox1";
       this.checkBox1.Size = new System.Drawing.Size(112, 16);
       this.checkBox1.TabIndex = 13;
@@ -299,7 +299,7 @@ namespace tapi3_dev
       // 
       // button5
       // 
-      this.button5.Location = new System.Drawing.Point(536, 112);
+      this.button5.Location = new System.Drawing.Point(597, 69);
       this.button5.Name = "button5";
       this.button5.Size = new System.Drawing.Size(75, 23);
       this.button5.TabIndex = 14;
@@ -308,27 +308,18 @@ namespace tapi3_dev
       // 
       // textBox2
       // 
-      this.textBox2.Location = new System.Drawing.Point(520, 80);
+      this.textBox2.Location = new System.Drawing.Point(470, 69);
       this.textBox2.Name = "textBox2";
       this.textBox2.Size = new System.Drawing.Size(100, 20);
       this.textBox2.TabIndex = 15;
       // 
       // label3
       // 
-      this.label3.Location = new System.Drawing.Point(520, 56);
+      this.label3.Location = new System.Drawing.Point(470, 45);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(88, 16);
       this.label3.TabIndex = 16;
       this.label3.Text = "tranfer address";
-      // 
-      // button6
-      // 
-      this.button6.Location = new System.Drawing.Point(520, 24);
-      this.button6.Name = "button6";
-      this.button6.Size = new System.Drawing.Size(75, 23);
-      this.button6.TabIndex = 17;
-      this.button6.Text = "Register";
-      this.button6.Click += new System.EventHandler(this.button6_Click);
       // 
       // notifyIcon
       // 
@@ -352,24 +343,102 @@ namespace tapi3_dev
       this.tEstToolStripMenuItem.Text = "TEst";
       this.tEstToolStripMenuItem.Click += new System.EventHandler(this.tEstToolStripMenuItem_Click);
       // 
+      // tabControl
+      // 
+      this.tabControl.Controls.Add(this.tabPage1);
+      this.tabControl.Controls.Add(this.tabPage2);
+      this.tabControl.Location = new System.Drawing.Point(12, 17);
+      this.tabControl.Name = "tabControl";
+      this.tabControl.SelectedIndex = 0;
+      this.tabControl.Size = new System.Drawing.Size(803, 350);
+      this.tabControl.TabIndex = 2;
+      // 
+      // tabPage1
+      // 
+      this.tabPage1.Controls.Add(this.button6);
+      this.tabPage1.Controls.Add(this.label1);
+      this.tabPage1.Controls.Add(this.checkBox1);
+      this.tabPage1.Controls.Add(this.label3);
+      this.tabPage1.Controls.Add(this.button4);
+      this.tabPage1.Controls.Add(this.textBox2);
+      this.tabPage1.Controls.Add(this.button3);
+      this.tabPage1.Controls.Add(this.button2);
+      this.tabPage1.Controls.Add(this.comboBox1);
+      this.tabPage1.Controls.Add(this.label2);
+      this.tabPage1.Controls.Add(this.button5);
+      this.tabPage1.Controls.Add(this.textBox1);
+      this.tabPage1.Controls.Add(this.groupBox2);
+      this.tabPage1.Controls.Add(this.groupBox1);
+      this.tabPage1.Location = new System.Drawing.Point(4, 22);
+      this.tabPage1.Name = "tabPage1";
+      this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage1.Size = new System.Drawing.Size(795, 324);
+      this.tabPage1.TabIndex = 0;
+      this.tabPage1.Text = "tabPage1";
+      this.tabPage1.UseVisualStyleBackColor = true;
+      // 
+      // button6
+      // 
+      this.button6.Location = new System.Drawing.Point(499, 18);
+      this.button6.Name = "button6";
+      this.button6.Size = new System.Drawing.Size(75, 23);
+      this.button6.TabIndex = 20;
+      this.button6.Text = "Register";
+      // 
+      // label1
+      // 
+      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label1.Location = new System.Drawing.Point(3, 26);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(50, 23);
+      this.label1.TabIndex = 19;
+      this.label1.Text = "Line";
+      // 
+      // comboBox1
+      // 
+      this.comboBox1.Location = new System.Drawing.Point(59, 18);
+      this.comboBox1.Name = "comboBox1";
+      this.comboBox1.Size = new System.Drawing.Size(408, 21);
+      this.comboBox1.TabIndex = 18;
+      this.comboBox1.Text = "Select Line of communication";
+      // 
+      // tabPage2
+      // 
+      this.tabPage2.Controls.Add(this.dataGridView2);
+      this.tabPage2.Controls.Add(this.dataGridView1);
+      this.tabPage2.Location = new System.Drawing.Point(4, 22);
+      this.tabPage2.Name = "tabPage2";
+      this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage2.Size = new System.Drawing.Size(795, 324);
+      this.tabPage2.TabIndex = 1;
+      this.tabPage2.Text = "tabPage2";
+      this.tabPage2.UseVisualStyleBackColor = true;
+      // 
+      // dataGridView1
+      // 
+      this.dataGridView1.AllowUserToOrderColumns = true;
+      this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+      this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.dataGridView1.Location = new System.Drawing.Point(3, 3);
+      this.dataGridView1.Name = "dataGridView1";
+      this.dataGridView1.Size = new System.Drawing.Size(789, 318);
+      this.dataGridView1.TabIndex = 0;
+      // 
+      // dataGridView2
+      // 
+      this.dataGridView2.AllowUserToAddRows = false;
+      this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+      this.dataGridView2.Location = new System.Drawing.Point(215, 29);
+      this.dataGridView2.Name = "dataGridView2";
+      this.dataGridView2.ReadOnly = true;
+      this.dataGridView2.Size = new System.Drawing.Size(240, 150);
+      this.dataGridView2.TabIndex = 1;
+      // 
       // Form1
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(632, 326);
-      this.Controls.Add(this.button6);
-      this.Controls.Add(this.label3);
-      this.Controls.Add(this.textBox2);
-      this.Controls.Add(this.button5);
-      this.Controls.Add(this.checkBox1);
-      this.Controls.Add(this.groupBox2);
-      this.Controls.Add(this.button4);
-      this.Controls.Add(this.button3);
-      this.Controls.Add(this.button2);
-      this.Controls.Add(this.label2);
-      this.Controls.Add(this.textBox1);
-      this.Controls.Add(this.groupBox1);
-      this.Controls.Add(this.label1);
-      this.Controls.Add(this.comboBox1);
+      this.ClientSize = new System.Drawing.Size(885, 379);
+      this.Controls.Add(this.tabControl);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "Form1";
       this.Text = "tapi3_dev";
@@ -378,8 +447,13 @@ namespace tapi3_dev
       this.groupBox1.ResumeLayout(false);
       this.groupBox2.ResumeLayout(false);
       this.contextMenuStrip1.ResumeLayout(false);
+      this.tabControl.ResumeLayout(false);
+      this.tabPage1.ResumeLayout(false);
+      this.tabPage1.PerformLayout();
+      this.tabPage2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
       this.ResumeLayout(false);
-      this.PerformLayout();
 
 		}
 		#endregion
@@ -576,11 +650,35 @@ namespace tapi3_dev
     {
       string output = JsonConvert.SerializeObject(lstHistory);
       System.IO.File.WriteAllText(destPath, output);
+      dataGridView1.DataSource = FillGrid(lstHistory);
     }
 
     private void DoDeserialize()
     {
-      this.lstHistory = JsonConvert.DeserializeObject<List<classHistory>>(File.ReadAllText(destPath));
+      lstHistory = JsonConvert.DeserializeObject<List<classHistory>>(File.ReadAllText(destPath));
+      dataGridView1.DataSource = FillGrid(lstHistory);
+    }
+
+
+    public static DataTable FillGrid<T>( IList<T> data)
+    {
+      PropertyDescriptorCollection props = TypeDescriptor.GetProperties(typeof(T));
+      DataTable table = new DataTable();
+      for (int i = 0; i < props.Count; i++)
+      {
+        PropertyDescriptor prop = props[i];
+        table.Columns.Add(prop.Name, prop.PropertyType);
+      }
+      object[] values = new object[props.Count];
+      foreach (T item in data)
+      {
+        for (int i = 0; i < values.Length; i++)
+        {
+          values[i] = props[i].GetValue(item);
+        }
+        table.Rows.Add(values);
+      }
+      return table;
     }
 
   }
