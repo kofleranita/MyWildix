@@ -53,7 +53,9 @@ namespace tapi3_dev
     private ComboBox comboBox1;
     private TabPage tabPage2;
     private DataGridView dataGridView1;
-    private DataGridView dataGridView2;
+    private ContextMenuStrip cMenuGrid;
+    private ToolStripMenuItem anrufenToolStripMenuItem;
+    private ToolStripMenuItem löschenToolStripMenuItem;
     string destPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "history.txt");
 
     public Form1()
@@ -183,21 +185,23 @@ namespace tapi3_dev
       this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.tEstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.tabControl = new System.Windows.Forms.TabControl();
+      this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.dataGridView1 = new System.Windows.Forms.DataGridView();
+      this.cMenuGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.anrufenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.löschenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.tabPage1 = new System.Windows.Forms.TabPage();
       this.button6 = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
       this.comboBox1 = new System.Windows.Forms.ComboBox();
-      this.tabPage2 = new System.Windows.Forms.TabPage();
-      this.dataGridView1 = new System.Windows.Forms.DataGridView();
-      this.dataGridView2 = new System.Windows.Forms.DataGridView();
       this.groupBox1.SuspendLayout();
       this.groupBox2.SuspendLayout();
       this.contextMenuStrip1.SuspendLayout();
       this.tabControl.SuspendLayout();
-      this.tabPage1.SuspendLayout();
       this.tabPage2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+      this.cMenuGrid.SuspendLayout();
+      this.tabPage1.SuspendLayout();
       this.SuspendLayout();
       // 
       // groupBox1
@@ -290,6 +294,8 @@ namespace tapi3_dev
       // 
       // checkBox1
       // 
+      this.checkBox1.Checked = true;
+      this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
       this.checkBox1.Location = new System.Drawing.Point(242, 234);
       this.checkBox1.Name = "checkBox1";
       this.checkBox1.Size = new System.Drawing.Size(112, 16);
@@ -345,13 +351,60 @@ namespace tapi3_dev
       // 
       // tabControl
       // 
-      this.tabControl.Controls.Add(this.tabPage1);
       this.tabControl.Controls.Add(this.tabPage2);
+      this.tabControl.Controls.Add(this.tabPage1);
       this.tabControl.Location = new System.Drawing.Point(12, 17);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;
       this.tabControl.Size = new System.Drawing.Size(803, 350);
       this.tabControl.TabIndex = 2;
+      // 
+      // tabPage2
+      // 
+      this.tabPage2.Controls.Add(this.dataGridView1);
+      this.tabPage2.Location = new System.Drawing.Point(4, 22);
+      this.tabPage2.Name = "tabPage2";
+      this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage2.Size = new System.Drawing.Size(795, 324);
+      this.tabPage2.TabIndex = 1;
+      this.tabPage2.Text = "History";
+      this.tabPage2.UseVisualStyleBackColor = true;
+      // 
+      // dataGridView1
+      // 
+      this.dataGridView1.AllowUserToOrderColumns = true;
+      this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+      this.dataGridView1.ContextMenuStrip = this.cMenuGrid;
+      this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.dataGridView1.Location = new System.Drawing.Point(3, 3);
+      this.dataGridView1.MultiSelect = false;
+      this.dataGridView1.Name = "dataGridView1";
+      this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+      this.dataGridView1.Size = new System.Drawing.Size(789, 318);
+      this.dataGridView1.TabIndex = 0;
+      this.dataGridView1.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseDown);
+      // 
+      // cMenuGrid
+      // 
+      this.cMenuGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.anrufenToolStripMenuItem,
+            this.löschenToolStripMenuItem});
+      this.cMenuGrid.Name = "cMenuGrid";
+      this.cMenuGrid.Size = new System.Drawing.Size(119, 48);
+      // 
+      // anrufenToolStripMenuItem
+      // 
+      this.anrufenToolStripMenuItem.Name = "anrufenToolStripMenuItem";
+      this.anrufenToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+      this.anrufenToolStripMenuItem.Text = "Anrufen";
+      this.anrufenToolStripMenuItem.Click += new System.EventHandler(this.anrufenToolStripMenuItem_Click);
+      // 
+      // löschenToolStripMenuItem
+      // 
+      this.löschenToolStripMenuItem.Name = "löschenToolStripMenuItem";
+      this.löschenToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+      this.löschenToolStripMenuItem.Text = "Löschen";
+      this.löschenToolStripMenuItem.Click += new System.EventHandler(this.löschenToolStripMenuItem_Click);
       // 
       // tabPage1
       // 
@@ -374,7 +427,7 @@ namespace tapi3_dev
       this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
       this.tabPage1.Size = new System.Drawing.Size(795, 324);
       this.tabPage1.TabIndex = 0;
-      this.tabPage1.Text = "tabPage1";
+      this.tabPage1.Text = "Function";
       this.tabPage1.UseVisualStyleBackColor = true;
       // 
       // button6
@@ -402,38 +455,6 @@ namespace tapi3_dev
       this.comboBox1.TabIndex = 18;
       this.comboBox1.Text = "Select Line of communication";
       // 
-      // tabPage2
-      // 
-      this.tabPage2.Controls.Add(this.dataGridView2);
-      this.tabPage2.Controls.Add(this.dataGridView1);
-      this.tabPage2.Location = new System.Drawing.Point(4, 22);
-      this.tabPage2.Name = "tabPage2";
-      this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPage2.Size = new System.Drawing.Size(795, 324);
-      this.tabPage2.TabIndex = 1;
-      this.tabPage2.Text = "tabPage2";
-      this.tabPage2.UseVisualStyleBackColor = true;
-      // 
-      // dataGridView1
-      // 
-      this.dataGridView1.AllowUserToOrderColumns = true;
-      this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-      this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.dataGridView1.Location = new System.Drawing.Point(3, 3);
-      this.dataGridView1.Name = "dataGridView1";
-      this.dataGridView1.Size = new System.Drawing.Size(789, 318);
-      this.dataGridView1.TabIndex = 0;
-      // 
-      // dataGridView2
-      // 
-      this.dataGridView2.AllowUserToAddRows = false;
-      this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-      this.dataGridView2.Location = new System.Drawing.Point(215, 29);
-      this.dataGridView2.Name = "dataGridView2";
-      this.dataGridView2.ReadOnly = true;
-      this.dataGridView2.Size = new System.Drawing.Size(240, 150);
-      this.dataGridView2.TabIndex = 1;
-      // 
       // Form1
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -441,18 +462,18 @@ namespace tapi3_dev
       this.Controls.Add(this.tabControl);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "Form1";
-      this.Text = "tapi3_dev";
+      this.Text = "Wildix";
       this.Load += new System.EventHandler(this.Form1_Load);
       this.Resize += new System.EventHandler(this.Form1_Resize);
       this.groupBox1.ResumeLayout(false);
       this.groupBox2.ResumeLayout(false);
       this.contextMenuStrip1.ResumeLayout(false);
       this.tabControl.ResumeLayout(false);
-      this.tabPage1.ResumeLayout(false);
-      this.tabPage1.PerformLayout();
       this.tabPage2.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+      this.cMenuGrid.ResumeLayout(false);
+      this.tabPage1.ResumeLayout(false);
+      this.tabPage1.PerformLayout();
       this.ResumeLayout(false);
 
 		}
@@ -474,36 +495,40 @@ namespace tapi3_dev
 
 		private void button2_Click(object sender, System.EventArgs e)
 		{
-			TAPI3Lib.ITAddress ln=null;
-			ln=ia[line];
-			if(textBox1.Text.Length!=0)
-			{
-        cn.addtolist("Rufe " + textBox1.Text + " an");
-				//MessageBox.Show(""+textBox1.Text,"Calling to");				
-				try
-				{
-					if(!h323)
-					{
-						bcc = ln.CreateCall(textBox1.Text,TapiConstants.LINEADDRESSTYPE_PHONENUMBER|TapiConstants.LINEADDRESSTYPE_IPADDRESS,TapiConstants.TAPIMEDIATYPE_DATAMODEM|TapiConstants.TAPIMEDIATYPE_AUDIO);
-						bcc.SetQOS(TapiConstants.TAPIMEDIATYPE_DATAMODEM|TapiConstants.TAPIMEDIATYPE_AUDIO,QOS_SERVICE_LEVEL.QSL_BEST_EFFORT);
-						bcc.Connect(false);
-					}
-					else
-					{
-						bcc = ln.CreateCall(textBox1.Text,TapiConstants.LINEADDRESSTYPE_IPADDRESS,TapiConstants.TAPIMEDIATYPE_AUDIO);
-						bcc.Connect(false);
-					}
-				}
-				catch(Exception exp)
-				{
-					MessageBox.Show("Failed to create call!","TAPI3");
-				}
-			}
-			else
-			{
-				MessageBox.Show("Please enter number to dial.. ");
-			}
+      MakeCall(textBox1.Text);
 		}
+
+    private void MakeCall(String Number)
+    {
+      TAPI3Lib.ITAddress ln = null;
+      ln = ia[line];
+      if (Number.Length != 0)
+      {
+        cn.addtolist("Rufe " + Number + " an");			
+        try
+        {
+         /* if (!h323)
+          {
+            bcc = ln.CreateCall(textBox1.Text, TapiConstants.LINEADDRESSTYPE_PHONENUMBER | TapiConstants.LINEADDRESSTYPE_IPADDRESS, TapiConstants.TAPIMEDIATYPE_DATAMODEM | TapiConstants.TAPIMEDIATYPE_AUDIO);
+            bcc.SetQOS(TapiConstants.TAPIMEDIATYPE_DATAMODEM | TapiConstants.TAPIMEDIATYPE_AUDIO, QOS_SERVICE_LEVEL.QSL_BEST_EFFORT);
+            bcc.Connect(false);
+          }
+          else
+          {*/
+            bcc = ln.CreateCall(textBox1.Text, TapiConstants.LINEADDRESSTYPE_IPADDRESS, TapiConstants.TAPIMEDIATYPE_AUDIO);
+            bcc.Connect(false);
+          //}
+        }
+        catch 
+        {
+          MessageBox.Show("Failed to create call!", "TAPI3");
+        }
+      }
+      else
+      {
+        MessageBox.Show("Please enter number to dial.. ");
+      }
+    }
 
 		private void button1_Click(object sender, System.EventArgs e)
 		{
@@ -659,6 +684,62 @@ namespace tapi3_dev
       dataGridView1.DataSource = FillGrid(lstHistory);
     }
 
+    private void anrufenToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (dataGridView1.SelectedCells.Count > 0)
+      {
+        int selectedrowindex = dataGridView1.SelectedCells[0].RowIndex;
+
+        DataGridViewRow selectedRow = dataGridView1.Rows[selectedrowindex];
+        string direction = Convert.ToString(selectedRow.Cells["Direction"].Value);
+        string numberToCall = "";
+        if (direction == "Outgoing")
+        {
+          numberToCall = Convert.ToString(selectedRow.Cells["ToNumber"].Value);
+        }
+        else
+        {
+          numberToCall = Convert.ToString(selectedRow.Cells["FromNumber"].Value);
+        }
+        MakeCall(numberToCall);
+      }
+    }
+
+    private void löschenToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (dataGridView1.SelectedCells.Count > 0)
+      {
+        int selectedrowindex = dataGridView1.SelectedCells[0].RowIndex;
+        DataGridViewRow selectedRow = dataGridView1.Rows[selectedrowindex];
+        for (int i = 0; i < lstHistory.Count - 1; i++)
+        {
+          if
+            (
+              (lstHistory[i].StartTime == Convert.ToDateTime(selectedRow.Cells["StartTime"].Value)) &
+              (lstHistory[i].Direction == Convert.ToString(selectedRow.Cells["Direction"].Value)) &
+              (lstHistory[i].FromNumber == Convert.ToString(selectedRow.Cells["FromNumber"].Value)) &
+              (lstHistory[i].ToNumber == Convert.ToString(selectedRow.Cells["ToNumber"].Value))
+            )
+          {
+            lstHistory.RemoveAt(i);
+            DoSerialize();
+            break;
+          }
+        }
+      }
+    }
+
+    private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+    {
+      if (e.Button == MouseButtons.Right)
+      {
+        int rowSelected = e.RowIndex;
+        if (e.RowIndex != -1)
+        {
+          this.dataGridView1.Rows[rowSelected].Selected = true;
+        }
+      }
+    }
 
     public static DataTable FillGrid<T>( IList<T> data)
     {
@@ -694,22 +775,24 @@ namespace tapi3_dev
 
     public void Event(TAPI3Lib.TAPI_EVENT te,object eobj)
 		{
-      
-			switch(te)
+      classHistory clHistory = new classHistory();
+      TAPI3Lib.ITCallNotificationEvent cn = eobj as TAPI3Lib.ITCallNotificationEvent;
+      switch (te)
 			{
 				case TAPI3Lib.TAPI_EVENT.TE_CALLNOTIFICATION:
 					addtolist("call notification event has occured");
-          TAPI3Lib.ITCallNotificationEvent cn = eobj as TAPI3Lib.ITCallNotificationEvent;
+          //TAPI3Lib.ITCallNotificationEvent cn = eobj as TAPI3Lib.ITCallNotificationEvent;
           if (cn.Call.CallState == TAPI3Lib.CALL_STATE.CS_OFFERING)
           {
             string c = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
             addtolist("Call Offering: " + c + " -> " + cn.Call.Address.DialableAddress);
 
-            classHistory clHistory = new classHistory();
+            //classHistory clHistory = new classHistory();
             clHistory.FromName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
             clHistory.FromNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
             clHistory.ToName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
             clHistory.ToNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
+            clHistory.Direction = "Incoming";
             addToHistory(clHistory);
 
             addToCallNotify(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME) + " (" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER) + ")");
@@ -730,7 +813,14 @@ namespace tapi3_dev
 				case TAPI3Lib.TAPI_EVENT.TE_DIGITEVENT:
 					TAPI3Lib.ITDigitDetectionEvent dd=(TAPI3Lib.ITDigitDetectionEvent)eobj;
 					addtolist("Dialed digit"+dd.ToString());
-					break;
+
+          clHistory.FromName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
+          clHistory.FromNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
+          clHistory.ToName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
+          clHistory.ToNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
+          clHistory.Direction = "Outgoing";
+          addToHistory(clHistory);
+          break;
 				case TAPI3Lib.TAPI_EVENT.TE_GENERATEEVENT:
 					TAPI3Lib.ITDigitGenerationEvent dg=(TAPI3Lib.ITDigitGenerationEvent)eobj;
 					MessageBox.Show("digit dialed!");

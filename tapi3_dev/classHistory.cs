@@ -6,6 +6,7 @@ namespace tapi3_dev
 {
   class classHistory
   {
+    private string direction;
     private string fromName;
     private string fromNumber;
     private string toName;
@@ -43,13 +44,20 @@ namespace tapi3_dev
       set { startTime = value;}
     }
 
-    public void addHistory(string fromName, string fromNumber, string toName, string toNumber, DateTime startTime)
+    public string Direction
+    {
+      get { return (direction ?? "").ToString(); }
+      set { direction = value; }
+    }
+
+    public void addHistory(string fromName, string fromNumber, string toName, string toNumber, DateTime startTime, string direction)
     {
       this.FromName = fromName;
       this.FromNumber = fromNumber;
       this.ToName = toName;
       this.ToNumber = toNumber;
       this.StartTime = startTime;
+      this.Direction = direction;
     }
   }
 }
