@@ -56,6 +56,7 @@ namespace tapi3_dev
     private ContextMenuStrip cMenuGrid;
     private ToolStripMenuItem anrufenToolStripMenuItem;
     private ToolStripMenuItem löschenToolStripMenuItem;
+    private ToolStripMenuItem beendenToolStripMenuItem;
     string destPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "history.txt");
 
     public Form1()
@@ -65,7 +66,7 @@ namespace tapi3_dev
 			//
 			InitializeComponent();
 			initializetapi3();
-			h323=false;
+			h323=true;
 			reject=false;
       notifyIcon.Visible = true;
       DoDeserialize();
@@ -79,6 +80,7 @@ namespace tapi3_dev
           comboBox1.SelectedIndex = myLine;
           Hide();
           this.WindowState = FormWindowState.Minimized;
+          //ShowInTaskbar = false;
           RegisterLine();
         }
       }
@@ -184,6 +186,7 @@ namespace tapi3_dev
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.tEstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.beendenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPage2 = new System.Windows.Forms.TabPage();
       this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -237,6 +240,7 @@ namespace tapi3_dev
       this.textBox1.Name = "textBox1";
       this.textBox1.Size = new System.Drawing.Size(152, 20);
       this.textBox1.TabIndex = 6;
+      this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
       // 
       // label2
       // 
@@ -338,16 +342,24 @@ namespace tapi3_dev
       // contextMenuStrip1
       // 
       this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tEstToolStripMenuItem});
+            this.tEstToolStripMenuItem,
+            this.beendenToolStripMenuItem});
       this.contextMenuStrip1.Name = "contextMenuStrip1";
-      this.contextMenuStrip1.Size = new System.Drawing.Size(97, 26);
+      this.contextMenuStrip1.Size = new System.Drawing.Size(199, 48);
       // 
       // tEstToolStripMenuItem
       // 
       this.tEstToolStripMenuItem.Name = "tEstToolStripMenuItem";
-      this.tEstToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
-      this.tEstToolStripMenuItem.Text = "TEst";
+      this.tEstToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+      this.tEstToolStripMenuItem.Text = "Teste Benachrichtigung";
       this.tEstToolStripMenuItem.Click += new System.EventHandler(this.tEstToolStripMenuItem_Click);
+      // 
+      // beendenToolStripMenuItem
+      // 
+      this.beendenToolStripMenuItem.Name = "beendenToolStripMenuItem";
+      this.beendenToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+      this.beendenToolStripMenuItem.Text = "Beenden";
+      this.beendenToolStripMenuItem.Click += new System.EventHandler(this.beendenToolStripMenuItem_Click);
       // 
       // tabControl
       // 
@@ -463,6 +475,7 @@ namespace tapi3_dev
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "Form1";
       this.Text = "Wildix";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
       this.Load += new System.EventHandler(this.Form1_Load);
       this.Resize += new System.EventHandler(this.Form1_Resize);
       this.groupBox1.ResumeLayout(false);
@@ -515,7 +528,7 @@ namespace tapi3_dev
           }
           else
           {*/
-            bcc = ln.CreateCall(textBox1.Text, TapiConstants.LINEADDRESSTYPE_IPADDRESS, TapiConstants.TAPIMEDIATYPE_AUDIO);
+            bcc = ln.CreateCall(Number, TapiConstants.LINEADDRESSTYPE_IPADDRESS, TapiConstants.TAPIMEDIATYPE_AUDIO);
             bcc.Connect(false);
           //}
         }
@@ -618,6 +631,7 @@ namespace tapi3_dev
       {
         Hide();
         notifyIcon.Visible = true;
+        ShowInTaskbar = true;
       }
 
     }
@@ -666,9 +680,11 @@ namespace tapi3_dev
 
     private void addCallHistory(classHistory myHistory)
     {
+      MessageBox.Show("addCallHistory Start");
       myHistory.StartTime = DateTime.Now;
       lstHistory.Insert(0, myHistory);
       DoSerialize();
+      MessageBox.Show("addCallHistory End");
     }
 
     private void DoSerialize()
@@ -711,7 +727,7 @@ namespace tapi3_dev
       {
         int selectedrowindex = dataGridView1.SelectedCells[0].RowIndex;
         DataGridViewRow selectedRow = dataGridView1.Rows[selectedrowindex];
-        for (int i = 0; i < lstHistory.Count - 1; i++)
+        for (int i = 0; i < lstHistory.Count; i++)
         {
           if
             (
@@ -741,8 +757,32 @@ namespace tapi3_dev
       }
     }
 
+    private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      if (e.CloseReason == CloseReason.UserClosing)
+      {
+        e.Cancel = true;
+        Hide();
+        this.WindowState = FormWindowState.Minimized;
+      }
+    }
+
+    private void beendenToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      Application.Exit();
+    }
+
+    private void textBox1_KeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.KeyCode == Keys.Enter)
+      {
+        MakeCall(textBox1.Text);
+      }
+    }
+
     public static DataTable FillGrid<T>( IList<T> data)
     {
+      MessageBox.Show("FillGrid Start");
       PropertyDescriptorCollection props = TypeDescriptor.GetProperties(typeof(T));
       DataTable table = new DataTable();
       for (int i = 0; i < props.Count; i++)
@@ -757,8 +797,9 @@ namespace tapi3_dev
         {
           values[i] = props[i].GetValue(item);
         }
-        table.Rows.Add(values);
+        try { table.Rows.Add(values); } catch { }
       }
+      MessageBox.Show("FillGrid End");
       return table;
     }
 
@@ -775,6 +816,7 @@ namespace tapi3_dev
 
     public void Event(TAPI3Lib.TAPI_EVENT te,object eobj)
 		{
+      //ITCallStateEvent.Call.get_CallInfoLong(CALLINFO_LONG.CIL_CALLID); damit bekommt man vielleicht eine CallID
       classHistory clHistory = new classHistory();
       TAPI3Lib.ITCallNotificationEvent cn = eobj as TAPI3Lib.ITCallNotificationEvent;
       switch (te)
@@ -794,6 +836,14 @@ namespace tapi3_dev
             clHistory.ToNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
             clHistory.Direction = "Incoming";
             addToHistory(clHistory);
+            try
+            {
+              addtolist("CallID:" + cn.Call.get_CallInfoLong(CALLINFO_LONG.CIL_CALLID));
+            }
+            catch
+            {
+
+            }
 
             addToCallNotify(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME) + " (" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER) + ")");
             addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME));//Anita
@@ -813,13 +863,6 @@ namespace tapi3_dev
 				case TAPI3Lib.TAPI_EVENT.TE_DIGITEVENT:
 					TAPI3Lib.ITDigitDetectionEvent dd=(TAPI3Lib.ITDigitDetectionEvent)eobj;
 					addtolist("Dialed digit"+dd.ToString());
-
-          clHistory.FromName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
-          clHistory.FromNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
-          clHistory.ToName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
-          clHistory.ToNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
-          clHistory.Direction = "Outgoing";
-          addToHistory(clHistory);
           break;
 				case TAPI3Lib.TAPI_EVENT.TE_GENERATEEVENT:
 					TAPI3Lib.ITDigitGenerationEvent dg=(TAPI3Lib.ITDigitGenerationEvent)eobj;
@@ -835,11 +878,108 @@ namespace tapi3_dev
 				case TAPI3Lib.TAPI_EVENT.TE_CALLSTATE:
 					TAPI3Lib.ITCallStateEvent a=(TAPI3Lib.ITCallStateEvent)eobj;
 					TAPI3Lib.ITCallInfo b=a.Call;
-				switch(b.CallState)
-				{
-					case TAPI3Lib.CALL_STATE.CS_INPROGRESS:
+				  switch(b.CallState)
+				  {
+					  case TAPI3Lib.CALL_STATE.CS_INPROGRESS:
 						addtolist("dialing");
-						break;
+              try
+              {
+                addtolist("CallID:" + b.get_CallInfoLong(CALLINFO_LONG.CIL_CALLID));
+              }
+              catch
+              {
+
+              }
+              try
+              {
+                clHistory.FromName = "";
+                clHistory.ToName = "";
+                clHistory.FromNumber = "";
+                clHistory.ToNumber = "";
+                //TAPI3Lib.ITCallStateEvent cn1 = eobj as TAPI3Lib.ITCallStateEvent;
+                //cn1.Call.get_c
+                addtolist("**********");
+                try { addtolist("01"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNAME)); } catch { }
+                try { addtolist("02"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNUMBER)); } catch { }
+                try { addtolist("03"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_DISPLAYABLEADDRESS)); } catch { }
+                try { addtolist("04"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNAME)); } catch { }
+                try { addtolist("05"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNUMBER)); } catch { }
+                try { addtolist("06"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNAME)); } catch { }
+                try { addtolist("07"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNUMBER)); } catch { }
+                try { addtolist("08" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME)); } catch { }
+                try { addtolist("09" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER)); } catch { }
+                try { addtolist("30" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER)); } catch { }
+                try { addtolist("31" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME)); } catch { }
+
+
+
+                try { addtolist("11" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNAME)); } catch { }
+                try { addtolist("12" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNUMBER)); } catch { }
+                try { addtolist("13" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_DISPLAYABLEADDRESS)); } catch { }
+                try { addtolist("14" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNAME)); } catch { }
+                try { addtolist("15" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNUMBER)); } catch { }
+                try { addtolist("16" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNAME)); } catch { }
+                try { addtolist("17" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNUMBER)); } catch { }
+                try { addtolist("18" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME)); } catch { }
+                try { addtolist("19" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER)); } catch { }
+                try { addtolist("20" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER)); } catch { }
+                try { addtolist("21" + b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME)); } catch { }
+
+
+                /* try { addtolist("21" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNAME)); } catch { }
+                 try { addtolist("22" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNUMBER)); } catch { }
+                 try { addtolist("23" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_DISPLAYABLEADDRESS)); } catch { }
+                 try { addtolist("24" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNAME)); } catch { }
+                 try { addtolist("25" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNUMBER)); } catch { }
+                 try { addtolist("26" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNAME)); } catch { }
+                 try { addtolist("27" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNUMBER)); } catch { }*/
+
+                /*clHistory.FromName = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
+                clHistory.FromNumber = a.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
+                clHistory.ToName = a.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
+                clHistory.ToNumber = a.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);*/
+                clHistory.FromName   = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
+                clHistory.FromNumber = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
+                clHistory.ToNumber   = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
+                clHistory.Direction  = "Outgoing";
+                addToHistory(clHistory);
+              }
+              catch
+              {
+                clHistory.FromName = "Error";
+                addToHistory(clHistory);
+              }
+              
+
+              /*if (cn.Call.CallState == TAPI3Lib.CALL_STATE.CS_OFFERING)
+              {
+                string c = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
+                addtolist("Call Offering: " + c + " -> " + cn.Call.Address.DialableAddress);
+
+                //classHistory clHistory = new classHistory();
+                clHistory.FromName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
+                clHistory.FromNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
+                clHistory.ToName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
+                clHistory.ToNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
+                clHistory.Direction = "Incoming";
+                addToHistory(clHistory);
+
+                addToCallNotify(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME) + " (" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER) + ")");
+                addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME));//Anita
+                                                                                                 //addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDPARTYFRIENDLYNAME));
+                addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME));//EDV-Support
+                addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER));//410
+                                                                                                   //addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLINGPARTYID));
+                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNAME)); } catch { }
+                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNUMBER)); } catch { }
+                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_DISPLAYABLEADDRESS)); } catch { }
+                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNAME)); } catch { }
+                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNUMBER)); } catch { }
+                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNAME)); } catch { }
+                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNUMBER)); } catch { }
+              }*/
+
+              break;
 					case TAPI3Lib.CALL_STATE.CS_CONNECTED:
 						addtolist("Connected");
 						break;

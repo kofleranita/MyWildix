@@ -15,26 +15,34 @@ namespace tapi3_dev
 
     public string FromName
     {
-      get { return fromName; }
-      set { fromName = value;}
+      get { return (fromName ?? "").ToString(); }
+      set
+      {
+        Encoding wind1252 = Encoding.GetEncoding(1252);
+        Encoding utf8 = Encoding.UTF8;
+        byte[] wind1252Bytes = wind1252.GetBytes(value);
+        string wind1252String = wind1252.GetString(wind1252Bytes);
+        byte[] utf8Bytes = Encoding.Convert(wind1252, utf8, wind1252Bytes);
+        fromName = Encoding.UTF8.GetString(utf8Bytes);
+      }
     }
 
     public string FromNumber
     {
-      get { return fromNumber; }
+      get { return (fromNumber ?? "").ToString(); }
       set { fromNumber = value; }
     }
 
     public string ToName
     {
-      get { return toName;}
+      get { return (toName ?? "").ToString();}
       set { toName = value;
       }
     }
 
     public string ToNumber
     {
-      get { return toNumber; }
+      get { return (toNumber ?? "").ToString(); }
       set { toNumber = value;}
     }
 
