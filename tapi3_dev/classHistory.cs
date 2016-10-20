@@ -12,6 +12,7 @@ namespace tapi3_dev
     private string toName;
     private string toNumber;
     private DateTime startTime;
+    private int callID;
 
     public string FromName
     {
@@ -58,7 +59,13 @@ namespace tapi3_dev
       set { direction = value; }
     }
 
-    public void addHistory(string fromName, string fromNumber, string toName, string toNumber, DateTime startTime, string direction)
+    public int CallID
+    {
+      get { return callID; }
+      set { callID = value; }
+    }
+
+    public void addHistory(string fromName, string fromNumber, string toName, string toNumber, DateTime startTime, string direction, int callID)
     {
       this.FromName = fromName;
       this.FromNumber = fromNumber;
@@ -66,6 +73,17 @@ namespace tapi3_dev
       this.ToNumber = toNumber;
       this.StartTime = startTime;
       this.Direction = direction;
+      this.CallID = callID;
+    }
+
+    public void Clear()
+    {
+      this.FromName = "";
+      this.FromNumber = "";
+      this.ToName = "";
+      this.ToNumber = "";
+      this.Direction = "";
+      this.CallID = 0;
     }
   }
 }

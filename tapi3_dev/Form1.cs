@@ -680,11 +680,9 @@ namespace tapi3_dev
 
     private void addCallHistory(classHistory myHistory)
     {
-      MessageBox.Show("addCallHistory Start");
       myHistory.StartTime = DateTime.Now;
       lstHistory.Insert(0, myHistory);
       DoSerialize();
-      MessageBox.Show("addCallHistory End");
     }
 
     private void DoSerialize()
@@ -734,7 +732,8 @@ namespace tapi3_dev
               (lstHistory[i].StartTime == Convert.ToDateTime(selectedRow.Cells["StartTime"].Value)) &
               (lstHistory[i].Direction == Convert.ToString(selectedRow.Cells["Direction"].Value)) &
               (lstHistory[i].FromNumber == Convert.ToString(selectedRow.Cells["FromNumber"].Value)) &
-              (lstHistory[i].ToNumber == Convert.ToString(selectedRow.Cells["ToNumber"].Value))
+              (lstHistory[i].ToNumber == Convert.ToString(selectedRow.Cells["ToNumber"].Value)) &
+              (lstHistory[i].CallID == Convert.ToInt32(selectedRow.Cells["CallID"].Value))
             )
           {
             lstHistory.RemoveAt(i);
@@ -782,7 +781,6 @@ namespace tapi3_dev
 
     public static DataTable FillGrid<T>( IList<T> data)
     {
-      MessageBox.Show("FillGrid Start");
       PropertyDescriptorCollection props = TypeDescriptor.GetProperties(typeof(T));
       DataTable table = new DataTable();
       for (int i = 0; i < props.Count; i++)
@@ -799,7 +797,6 @@ namespace tapi3_dev
         }
         try { table.Rows.Add(values); } catch { }
       }
-      MessageBox.Show("FillGrid End");
       return table;
     }
 
@@ -818,6 +815,7 @@ namespace tapi3_dev
 		{
       //ITCallStateEvent.Call.get_CallInfoLong(CALLINFO_LONG.CIL_CALLID); damit bekommt man vielleicht eine CallID
       classHistory clHistory = new classHistory();
+      clHistory.Clear();
       TAPI3Lib.ITCallNotificationEvent cn = eobj as TAPI3Lib.ITCallNotificationEvent;
       switch (te)
 			{
@@ -835,15 +833,8 @@ namespace tapi3_dev
             clHistory.ToName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
             clHistory.ToNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
             clHistory.Direction = "Incoming";
+            try { clHistory.CallID = cn.Call.get_CallInfoLong(CALLINFO_LONG.CIL_CALLID); } catch { }
             addToHistory(clHistory);
-            try
-            {
-              addtolist("CallID:" + cn.Call.get_CallInfoLong(CALLINFO_LONG.CIL_CALLID));
-            }
-            catch
-            {
-
-            }
 
             addToCallNotify(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME) + " (" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER) + ")");
             addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME));//Anita
@@ -884,18 +875,6 @@ namespace tapi3_dev
 						addtolist("dialing");
               try
               {
-                addtolist("CallID:" + b.get_CallInfoLong(CALLINFO_LONG.CIL_CALLID));
-              }
-              catch
-              {
-
-              }
-              try
-              {
-                clHistory.FromName = "";
-                clHistory.ToName = "";
-                clHistory.FromNumber = "";
-                clHistory.ToNumber = "";
                 //TAPI3Lib.ITCallStateEvent cn1 = eobj as TAPI3Lib.ITCallStateEvent;
                 //cn1.Call.get_c
                 addtolist("**********");
@@ -938,9 +917,10 @@ namespace tapi3_dev
                 clHistory.FromNumber = a.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
                 clHistory.ToName = a.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
                 clHistory.ToNumber = a.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);*/
-                clHistory.FromName   = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
-                clHistory.FromNumber = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
-                clHistory.ToNumber   = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
+                try { clHistory.FromName = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME); } catch { }
+                try { clHistory.FromNumber = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER); } catch { }
+                try { clHistory.ToNumber = b.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER); } catch { }
+                try { clHistory.CallID = b.get_CallInfoLong(CALLINFO_LONG.CIL_CALLID); } catch { }
                 clHistory.Direction  = "Outgoing";
                 addToHistory(clHistory);
               }
