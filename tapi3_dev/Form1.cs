@@ -517,6 +517,7 @@ namespace tapi3_dev
       ln = ia[line];
       if (Number.Length != 0)
       {
+        
         cn.addtolist("Rufe " + Number + " an");			
         try
         {
@@ -585,7 +586,7 @@ namespace tapi3_dev
 				bc.Disconnect(DISCONNECT_CODE.DC_NORMAL);
 				ici.ReleaseUserUserInfo();
 			}
-			catch(Exception exp)
+			catch
 			{
 				MessageBox.Show("No call to disconnect!","TAPI3");
 			}
@@ -647,10 +648,10 @@ namespace tapi3_dev
       {
         registertoken[line] = tobj.RegisterCallNotifications(ia[line], true, true, TapiConstants.TAPIMEDIATYPE_AUDIO, 2);
         cn.addtolist("Registration token : " + registertoken[line]);
-        addCallNotify("Registriert " + registertoken[line]);
+        //addCallNotify("Registriert " + registertoken[line]);
         //MessageBox.Show("Registration token : "+registertoken[line],"Registration Succeed for line "+line);
       }
-      catch (Exception ein)
+      catch
       {
         MessageBox.Show("Failed to register on line " + line, "Registration for calls");
       }
@@ -658,7 +659,7 @@ namespace tapi3_dev
 
     private void tEstToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      addCallNotify("context");
+      addCallNotify("Test");
       classHistory mycl = new classHistory();
       mycl.FromName = "test "+(DateTime.Now).ToShortTimeString();
       addCallHistory(mycl);
@@ -687,9 +688,17 @@ namespace tapi3_dev
 
     private void DoSerialize()
     {
-      string output = JsonConvert.SerializeObject(lstHistory);
-      System.IO.File.WriteAllText(destPath, output);
-      dataGridView1.DataSource = FillGrid(lstHistory);
+      cn.addtolist("DoSerialize");
+      try
+      {
+        string output = JsonConvert.SerializeObject(lstHistory);
+        System.IO.File.WriteAllText(destPath, output);
+        dataGridView1.DataSource = FillGrid(lstHistory);
+      }
+      catch (Exception e)
+      {
+        MessageBox.Show("Fehler bei DoSerialize " +e.ToString());
+      }
     }
 
     private void DoDeserialize()
@@ -783,19 +792,26 @@ namespace tapi3_dev
     {
       PropertyDescriptorCollection props = TypeDescriptor.GetProperties(typeof(T));
       DataTable table = new DataTable();
-      for (int i = 0; i < props.Count; i++)
+      try
       {
-        PropertyDescriptor prop = props[i];
-        table.Columns.Add(prop.Name, prop.PropertyType);
-      }
-      object[] values = new object[props.Count];
-      foreach (T item in data)
-      {
-        for (int i = 0; i < values.Length; i++)
+        for (int i = 0; i < props.Count; i++)
         {
-          values[i] = props[i].GetValue(item);
+          PropertyDescriptor prop = props[i];
+          table.Columns.Add(prop.Name, prop.PropertyType);
         }
-        try { table.Rows.Add(values); } catch { }
+        object[] values = new object[props.Count];
+        foreach (T item in data)
+        {
+          for (int i = 0; i < values.Length; i++)
+          {
+            values[i] = props[i].GetValue(item);
+          }
+          try { table.Rows.Add(values); } catch { }
+        }
+      }
+      catch (Exception e)
+      {
+        MessageBox.Show("Fehler bei FillGrid "+e.ToString());
       }
       return table;
     }
@@ -813,6 +829,7 @@ namespace tapi3_dev
 
     public void Event(TAPI3Lib.TAPI_EVENT te,object eobj)
 		{
+      addtolist("**********");
       //ITCallStateEvent.Call.get_CallInfoLong(CALLINFO_LONG.CIL_CALLID); damit bekommt man vielleicht eine CallID
       classHistory clHistory = new classHistory();
       clHistory.Clear();
@@ -875,9 +892,6 @@ namespace tapi3_dev
 						addtolist("dialing");
               try
               {
-                //TAPI3Lib.ITCallStateEvent cn1 = eobj as TAPI3Lib.ITCallStateEvent;
-                //cn1.Call.get_c
-                addtolist("**********");
                 try { addtolist("01"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNAME)); } catch { }
                 try { addtolist("02"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNUMBER)); } catch { }
                 try { addtolist("03"+ cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_DISPLAYABLEADDRESS)); } catch { }
@@ -929,36 +943,6 @@ namespace tapi3_dev
                 clHistory.FromName = "Error";
                 addToHistory(clHistory);
               }
-              
-
-              /*if (cn.Call.CallState == TAPI3Lib.CALL_STATE.CS_OFFERING)
-              {
-                string c = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
-                addtolist("Call Offering: " + c + " -> " + cn.Call.Address.DialableAddress);
-
-                //classHistory clHistory = new classHistory();
-                clHistory.FromName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME);
-                clHistory.FromNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER);
-                clHistory.ToName = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME);
-                clHistory.ToNumber = cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNUMBER);
-                clHistory.Direction = "Incoming";
-                addToHistory(clHistory);
-
-                addToCallNotify(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME) + " (" + cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER) + ")");
-                addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDIDNAME));//Anita
-                                                                                                 //addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLEDPARTYFRIENDLYNAME));
-                addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNAME));//EDV-Support
-                addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLERIDNUMBER));//410
-                                                                                                   //addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CALLINGPARTYID));
-                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNAME)); } catch { }
-                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_CONNECTEDIDNUMBER)); } catch { }
-                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_DISPLAYABLEADDRESS)); } catch { }
-                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNAME)); } catch { }
-                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTINGIDNUMBER)); } catch { }
-                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNAME)); } catch { }
-                try { addtolist(cn.Call.get_CallInfoString(TAPI3Lib.CALLINFO_STRING.CIS_REDIRECTIONIDNUMBER)); } catch { }
-              }*/
-
               break;
 					case TAPI3Lib.CALL_STATE.CS_CONNECTED:
 						addtolist("Connected");
